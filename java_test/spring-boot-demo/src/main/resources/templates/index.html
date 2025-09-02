@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户输入保存</title>
+</head>
+<body>
+<h1>用户输入保存示例</h1>
+<form action="/submit" method="post">
+    <input type="text" name="content" placeholder="请输入内容" required />
+    <button type="submit">提交</button>
+</form>
+<hr/>
+<h2>已保存内容：</h2>
+<ul>
+    <li th:each="input : ${inputPage.content}" th:text="${input.content}"></li>
+</ul>
+<div class="pagination">
+    <a th:each="i : ${#numbers.sequence(0, inputPage.totalPages - 1)}"
+       th:href="@{/?page=${i}}"
+       th:text="${i + 1}"></a>
+</div>
+<div>
+    <a th:if="${inputPage.hasPrevious()}" th:href="@{/?page=${inputPage.number - 1}}">上一页</a>
+    <span>第 [[${inputPage.number + 1}]] 页 / 共 [[${inputPage.totalPages}]] 页</span>
+    <a th:if="${inputPage.hasNext()}" th:href="@{/?page=${inputPage.number + 1}}">下一页</a>
+</div>
+</body>
+</html>
+
+<style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    ul { list-style-type: none; padding: 0; }
+    li { padding: 5px 0; }
+    .pagination { margin-top: 20px; }
+    .pagination a { margin: 0 10px; }
+</style>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>需求详情</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      background: #fff;
+      padding: 25px 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 700px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+      font-size: 24px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+    }
+
+    .field label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #555;
+    }
+
+    .field span {
+      background: #f9f9f9;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      word-break: break-word;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 20px;
+      background: linear-gradient(90deg, #4A90E2, #357ABD);
+      color: white;
+      border-radius: 10px;
+      text-decoration: none;
+      text-align: center;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      background: linear-gradient(90deg, #357ABD, #2B5F9D);
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 15px 20px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      .field span {
+        font-size: 13px;
+        padding: 8px 10px;
+      }
+
+      .back-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>需求详情</h2>
+    <div class="field"><label>审批编号:</label> <span id="id"></span></div>
+    <div class="field"><label>提交时间:</label> <span id="submitTime"></span></div>
+    <div class="field"><label>所在部门:</label> <span id="department"></span></div>
+    <div class="field"><label>申请部门:</label> <span id="applyDepartment"></span></div>
+    <div class="field"><label>客户名称:</label> <span id="customerName"></span></div>
+    <div class="field"><label>商机编码:</label> <span id="businessCode"></span></div>
+    <div class="field"><label>需求名称:</label> <span id="requirementName"></span></div>
+    <div class="field"><label>描述:</label> <span id="description"></span></div>
+    <div class="field"><label>预计支撑时间:</label> <span id="expectedSupportTime"></span></div>
+    <div class="field"><label>联系人:</label> <span id="contactName"></span></div>
+    <div class="field"><label>电话:</label> <span id="contactPhone"></span></div>
+    <div class="field"><label>备注:</label> <span id="remark"></span></div>
+
+    <a href="admin.html" class="back-btn">返回列表</a>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    async function loadDetail() {
+      if (!id) return;
+
+      try {
+        let res = await fetch(`/api/records`);
+        let data = await res.json();
+
+        // 确保拿到数组
+        let list = Array.isArray(data) ? data : (data.content || []);
+
+        let r = list.find(item => item.id == id);
+        if (!r) {
+          console.warn("未找到对应记录");
+          return;
+        }
+
+        document.getElementById('id').innerText = r.id;
+        document.getElementById('department').innerText = r.department;
+        document.getElementById('applyDepartment').innerText = r.applyDepartment;
+        document.getElementById('customerName').innerText = r.customerName;
+        document.getElementById('businessCode').innerText = r.businessCode;
+        document.getElementById('requirementName').innerText = r.requirementName;
+        document.getElementById('description').innerText = r.description;
+        document.getElementById('contactName').innerText = r.contactName;
+        document.getElementById('contactPhone').innerText = r.contactPhone;
+        document.getElementById('remark').innerText = r.remark;
+
+        // 修正提交时间少八小时问题
+        if (r.submitTime) {
+          let submit = new Date(r.submitTime);
+          submit.setHours(submit.getHours() + 8);
+          document.getElementById('submitTime').innerText = submit.toISOString().replace("T", " ").slice(0, 19);
+        }
+
+        document.getElementById('expectedSupportTime').innerText = r.expectedSupportTime?.replace("T", " ") || '';
+
+      } catch (err) {
+        console.error("加载详情失败", err);
+      }
+    }
+
+    loadDetail();
+  </script>
+</body>
+
+</html>
