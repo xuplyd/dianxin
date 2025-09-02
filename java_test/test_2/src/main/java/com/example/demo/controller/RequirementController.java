@@ -1,5 +1,8 @@
 package com.example.demo.controller;
 
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import com.example.demo.entity.Requirement;
 import com.example.demo.repository.RequirementRepository;
 import jakarta.persistence.criteria.Predicate;
@@ -16,7 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api")
@@ -32,9 +37,7 @@ public class RequirementController {
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = startOfDay.plusDays(1);
 
-        long count = repository.count((root, query, cb) ->
-                cb.between(root.get("submitTime"), startOfDay, endOfDay)
-        );
+        long count = repository.count((root, query, cb) -> cb.between(root.get("submitTime"), startOfDay, endOfDay));
         long seq = count + 1;
 
         String id = today.format(DateTimeFormatter.BASIC_ISO_DATE) + String.format("%04d", seq);
@@ -43,6 +46,7 @@ public class RequirementController {
         // 设置提交时间为上海时区当前时间
         req.setSubmitTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
 
+        // 保存到数据库
         return repository.save(req);
     }
 
@@ -54,13 +58,13 @@ public class RequirementController {
             @RequestParam(required = false) String applyDepartment,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startTime,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endTime,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expectedTime
-    ) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expectedTime) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "submitTime"));
 
         Specification<Requirement> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
+            // 过滤条件
             if (department != null && !department.isEmpty()) {
                 predicates.add(cb.like(root.get("department"), "%" + department + "%"));
             }

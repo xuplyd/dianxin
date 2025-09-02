@@ -191,30 +191,37 @@
         // 表单提交
         document.getElementById("reqForm").onsubmit = async (e) => {
             e.preventDefault();
-            let form = new FormData(e.target);
-            let data = Object.fromEntries(form.entries());
+            const data = Object.fromEntries(new FormData(e.target).entries());
 
-            // JS 校验手机号
-            const phoneRegex = /^1\d{10}$/;
-            if (!phoneRegex.test(data.contactPhone)) {
+            // 格式化 expectedSupportTime，确保它没有时区
+            if (data.expectedSupportTime) {
+                // 从 datetime-local 输入中获取时间，格式为 yyyy-MM-ddTHH:mm
+                let expectedSupportTime = new Date(data.expectedSupportTime);
+                // 将其格式化为 "yyyy-MM-ddTHH:mm" 格式
+                data.expectedSupportTime = expectedSupportTime.toISOString().slice(0, 16); // 例如: "2025-09-13T07:20"
+            }
+
+            // 手机号校验
+            if (!/^1\d{10}$/.test(data.contactPhone)) {
                 alert("请输入有效的11位手机号");
                 return;
             }
 
-            // 将 expectedSupportTime 转换为带时区的 ISO 8601 格式
-            if (data.expectedSupportTime) {
-                const date = new Date(data.expectedSupportTime);
-                data.expectedSupportTime = date.toISOString(); // 转换为 2025-09-02T11:24:00.000Z
-            }
-
-            await fetch("/api/submit", {
+            const res = await fetch("/api/submit", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
+                body: JSON.stringify(data) // 直接传表单数据
             });
-            alert("提交成功！");
-            e.target.reset();
-        }
+
+            if (res.ok) {
+                alert("提交成功！");
+                e.target.reset();
+            } else {
+                const text = await res.text();
+                alert("提交失败: " + text);
+                console.error("提交失败:", text);
+            }
+        };
 
         // 页面加载时调用
         loadDepartments();
