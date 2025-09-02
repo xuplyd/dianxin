@@ -2,9 +2,11 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+/**
+ * 需求实体类
+ */
 @Entity
 @Table(name = "requirements")
 public class Requirement {
@@ -31,7 +33,7 @@ public class Requirement {
     private String remark;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    private LocalDateTime submitTime = LocalDateTime.now(ZoneId.of("Asia/Shanghai"));
+    private LocalDateTime submitTime; // 保存为 LocalDateTime 类型
 
     // ---- Getter / Setter ----
     public String getId() { return id; }
