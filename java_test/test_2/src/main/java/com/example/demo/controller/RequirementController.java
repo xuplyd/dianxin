@@ -58,7 +58,8 @@ public class RequirementController {
             @RequestParam(required = false) String applyDepartment,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startTime,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endTime,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expectedTime) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expectedTimeStart,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate expectedTimeEnd) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "submitTime"));
 
         Specification<Requirement> spec = (root, query, cb) -> {
@@ -76,8 +77,11 @@ public class RequirementController {
             if (endTime != null) {
                 predicates.add(cb.lessThanOrEqualTo(root.get("submitTime"), endTime.plusDays(1).atStartOfDay()));
             }
-            if (expectedTime != null) {
-                predicates.add(cb.equal(root.get("expectedSupportTime"), expectedTime.atStartOfDay()));
+            if (expectedTimeStart != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("expectedSupportTime"), expectedTimeStart.atStartOfDay()));
+            }
+            if (expectedTimeStart != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("expectedSupportTime"), expectedTimeEnd.atStartOfDay()));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));

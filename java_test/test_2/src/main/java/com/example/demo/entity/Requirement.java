@@ -23,6 +23,7 @@ public class Requirement {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    // 格式化预期支撑时间
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime expectedSupportTime;
 
@@ -32,6 +33,7 @@ public class Requirement {
     @Column(columnDefinition = "TEXT")
     private String remark;
 
+    // 格式化提交时间
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime submitTime; // 保存为 LocalDateTime 类型
 

@@ -200,7 +200,8 @@ tr:hover { background: #eaf3ff; cursor: pointer; transition: background 0.2s; }
             </select>
         </label>
         <label>预计支撑时间：
-            <input type="date" id="expectedTime">
+            <input type="date" id="expectedTimeStart"> -
+            <input type="date" id="expectedTimeEnd">
         </label>
         <button onclick="search()">🔍 查询</button>
         <button onclick="exportExcel()">📥 导出 Excel</button>
@@ -257,7 +258,8 @@ function getFilters() {
         endTime: document.getElementById("endTime").value,
         department: document.getElementById("department").value,
         applyDepartment: document.getElementById("applyDepartment").value,
-        expectedTime: document.getElementById("expectedTime").value
+        expectedTimeStart: document.getElementById("expectedTimeStart").value,
+        expectedTimeEnd: document.getElementById("expectedTimeEnd").value
     };
 }
 
