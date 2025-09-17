@@ -113,7 +113,7 @@ public class RequirementController {
     // 获取部门列表
     @GetMapping("/departments")
     public List<String> getDepartments() {
-        return List.of("渭滨区", "金台区", "陈仓区", "凤翔区", "岐山县", "扶风县", "眉县", "陇县", "千阳县", "麟游县", "凤县", "太白县");
+        return List.of("渭滨区", "姜城堡", "中山路", "高新区", "金台区", "蔡家坡", "陈仓区", "凤翔区", "岐山县", "扶风县", "眉县", "陇县", "千阳县", "麟游县", "凤县", "太白县");
     }
 
     // 获取申请部门列表
